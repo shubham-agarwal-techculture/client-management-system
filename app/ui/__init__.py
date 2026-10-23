@@ -1,0 +1,1 @@
+"""HTMX admin UI (server-rendered, no build step)."""

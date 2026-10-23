@@ -1,0 +1,76 @@
+ImportError while loading conftest 'D:\projects-shubham\02.06.2026\personal_projects\client-management-system\tests\conftest.py'.
+tests\conftest.py:11: in <module>
+    from app.main import app
+app\main.py:33: in <module>
+    from app.api.v1 import (
+app\api\v1\documents.py:16: in <module>
+    from app.services.document_service import DocumentService
+app\services\document_service.py:19: in <module>
+    class DocumentService:
+app\services\document_service.py:26: in DocumentService
+    ) -> Page[Document]:
+         ^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\main.py:1028: in __class_getitem__
+    submodel = _generics.create_generic_submodel(model_name, origin, args, params)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\_internal\_generics.py:139: in create_generic_submodel
+    created_model = meta(
+.venv\Lib\site-packages\pydantic\_internal\_model_construction.py:253: in __new__
+    complete_model_class(
+.venv\Lib\site-packages\pydantic\_internal\_model_construction.py:628: in complete_model_class
+    schema = gen_schema.generate_schema(cls)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\_internal\_generate_schema.py:826: in generate_schema
+    schema = self._generate_schema_inner(obj, origin)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\_internal\_generate_schema.py:1127: in _generate_schema_inner
+    return self._model_schema(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\_internal\_generate_schema.py:952: in _model_schema
+    {k: self._generate_md_field_schema(k, v, decorators) for k, v in fields.items()},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\_internal\_generate_schema.py:1259: in _generate_md_field_schema
+    schema, metadata = self._common_field_schema(name, field_info, decorators)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\_internal\_generate_schema.py:1316: in _common_field_schema
+    schema = self._apply_annotations(
+.venv\Lib\site-packages\pydantic\_internal\_generate_schema.py:2324: in _apply_annotations
+    schema = get_inner_schema(source_type)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\_internal\_schema_generation_shared.py:84: in __call__
+    schema = self._handler(source_type)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\_internal\_generate_schema.py:2302: in inner_handler
+    schema = self._generate_schema_inner(obj, origin)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\_internal\_generate_schema.py:1132: in _generate_schema_inner
+    return self.match_type(obj, origin)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\_internal\_generate_schema.py:1191: in match_type
+    return self._match_generic_type(obj, origin)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\_internal\_generate_schema.py:1221: in _match_generic_type
+    return handler(self, obj)
+           ^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\_internal\_generate_schema.py:444: in <lambda>
+    list: lambda self, obj: self._list_schema(self._get_first_arg_or_any(obj)),
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\_internal\_generate_schema.py:509: in _list_schema
+    return core_schema.list_schema(self.generate_schema(items_type))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\_internal\_generate_schema.py:826: in generate_schema
+    schema = self._generate_schema_inner(obj, origin)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\_internal\_generate_schema.py:1132: in _generate_schema_inner
+    return self.match_type(obj, origin)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\_internal\_generate_schema.py:1195: in match_type
+    return self._unknown_type_schema(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv\Lib\site-packages\pydantic\_internal\_generate_schema.py:751: in _unknown_type_schema
+    raise PydanticSchemaGenerationError(
+E   pydantic.errors.PydanticSchemaGenerationError: Unable to generate pydantic-core schema for <class 'app.models.document.Document'>. Set `arbitrary_types_allowed=True` in the model_config to ignore this error or implement `__get_pydantic_core_schema__` on your type to fully support it.
+E
+E   If you got this error by calling handler(<some type>) within `__get_pydantic_core_schema__` then you likely need to call `handler.generate_schema(<some type>)` since we do not call `__get_pydantic_core_schema__` on `<some type>` otherwise to avoid infinite recursion.
+E
+E   For further information visit https://errors.pydantic.dev/2.14/u/schema-for-unknown-type

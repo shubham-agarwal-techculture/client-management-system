@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid" style="max-width: 400px; margin: 4rem auto;">
+    <h2>Sign in</h2>
+    {% if error %}
+        <div class="flash error" style="margin-bottom:1rem;">{{ error }}</div>
+    {% endif %}
+    <form method="post" action="/ui/login">
+        <label>Email</label>
+        <input name="email" type="email" placeholder="you@example.com" required>
+        <label>Password</label>
+        <input name="password" type="password" required>
+        <button class="contrast" type="submit" style="width:100%;">Sign in</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;">
+    <h2>{{ client.name }}</h2>
+    <a href="/ui/" class="secondary">← Back to list</a>
+</div>
+
+<div class="grid">
+    <div>
+        <h5>Profile</h5>
+        <table>
+            <tr><th style="width:40%">Type</th><td>{{ client.client_type or "-" }}</td></tr>
+            <tr><th>Status</th><td><span class="badge">{{ client.status }}</span></td></tr>
+            <tr><th>Email</th><td class="muted">{{ client.email or "-" }}</td></tr>
+            <tr><th>Phone</th><td class="muted">{{ client.phone or "-" }}</td></tr>
+            <tr><th>Website</th><td class="muted">{{ client.website or "-" }}</td></tr>
+            <tr><th>Notes</th><td class="muted">{{ client.notes or "-" }}</td></tr>
+        </table>
+    </div>
+    <div>
+        <h5>Custom values</h5>
+        <table>
+            {% for name, value in (client.custom_values or {}).items() %}
+            <tr><th>{{ name }}</th><td>{{ value or "-" }}</td></tr>
+            {% else %}
+            <tr><td class="muted">None defined.</td></tr>
+            {% endfor %}
+        </table>
+        <h5>Tags</h5>
+        <div style="margin-bottom:1rem;">
+            {% for t in (client.tags or []) %}
+            <span class="badge" style="background:#eef;color:#333;">{{ t.name }}</span>
+            {% else %}
+            <span class="muted">None</span>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<h4 style="margin-top:2rem;">Interactions</h4>
+<table>
+    <thead><tr><th>Type</th><th>Subject</th><th>Occurred</th><th>By</th></tr></thead>
+    <tbody>
+        {% for i in (client.interactions or [])|reverse %}
+        <tr>
+            <td>{{ i.interaction_type }}</td>
+            <td>{{ i.subject or "-" }}</td>
+            <td class="muted">{{ i.occurred_at or i.created_at }}</td>
+            <td class="muted">{{ i.user.full_name if i.user else "-" }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="muted">No interactions logged.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h4 style="margin-top:2rem;">Tasks</h4>
+<table>
+    <thead><tr><th>Title</th><th>Status</th><th>Priority</th><th>Due</th></th></thead>
+    <tbody>
+        {% for t in (client.tasks or []) %}
+        <tr>
+            <td>{{ t.title }}</td>
+            <td>{{ t.status }}</td>
+            <td>{{ t.priority }}</td>
+            <td class="muted">{{ t.due_date or "-" }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="muted">No tasks.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

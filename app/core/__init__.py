@@ -1,0 +1,1 @@
+"""Core utilities (hooks, exceptions, pagination)."""

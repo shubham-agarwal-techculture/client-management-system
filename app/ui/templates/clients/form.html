@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>New Client</h2>
+<form method="post" action="/ui/clients">
+    <div class="grid">
+        <div>
+            <label>Name <span style="color:#c00;">*</span></label>
+            <input name="name" type="text" required>
+        </div>
+        <div>
+            <label>Client type</label>
+            <input name="client_type" type="text" placeholder="e.g. prospect">
+        </div>
+        <div>
+            <label>Status</label>
+            <input name="status" type="text" value="active">
+        </div>
+    </div>
+    <div class="grid">
+        <div>
+            <label>Email</label>
+            <input name="email" type="email">
+        </div>
+        <div>
+            <label>Phone</label>
+            <input name="phone" type="tel">
+        </div>
+    </div>
+    <div>
+        <label>Notes</label>
+        <textarea name="notes" rows="3"></textarea>
+    </div>
+    <button class="contrast" type="submit">Create client</button>
+    <a href="/ui/" class="secondary" style="margin-left:.5rem;">Cancel</a>
+</form>
+{% endblock %}

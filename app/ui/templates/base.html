@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title | default("Client Management System") }}</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <link rel="stylesheet"
+          href="https://unpkg.com/@picocss/pico@2.0.6/css/pico.min.css">
+    <style>
+        .brand { font-weight: 700; letter-spacing: .5px; }
+        .badge { font-size: .75em; padding: .15em .5em; border-radius: .4em; }
+        .muted { color: #666; font-size: .9em; }
+    </style>
+</head>
+<body>
+<nav class="container-fluid">
+    <div class="toolbar">
+        <a href="/ui/" class="brand">{{ app_name }}</a>
+        <ul>
+            {% if user %}
+                <li><a href="/ui/clients/new">New Client</a></li>
+                <li><a href="/ui/logout">Sign out ({{ user.email }})</a></li>
+            {% else %}
+                <li><a href="/ui/login">Sign in</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+
+<main class="container">
+    {% if error %}<div class="flash error">{{ error }}</div>{% endif %}
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="container fluid muted" style="padding-top:2rem;border-top:1px solid #eee;">
+    Client Management System &mdash; domain-agnostic &amp; extensible.
+</footer>
+</body>
+</html>

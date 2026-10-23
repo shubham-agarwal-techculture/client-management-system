@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Clients</h2>
+
+<form hx-get="/ui/" hx-target="#clients-table" hx-trigger="input changed delay:300ms" class="mb-4">
+    <label>Search</label>
+    <input name="search" type="search" placeholder="Search name, email, phone…" value="{{ search }}">
+</form>
+
+<table id="clients-table">
+    <thead>
+        <tr>
+            <th>Name</th><th>Type</th><th>Status</th><th>Email</th><th>Phone</th><th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in clients %}
+        <tr hx-target="closest tr" hx-swap="outerHTML swap:1s">
+            <td><a href="/ui/clients/{{ c.id }}">{{ c.name }}</a></td>
+            <td class="muted">{{ c.client_type or "-" }}</td>
+            <td><span class="badge" style="background:var(--primary);color:#fff">{{ c.status }}</span></td>
+            <td class="muted">{{ c.email or "-" }}</td>
+            <td class="muted">{{ c.phone or "-" }}</td>
+            <td>
+                <form hx-delete="/ui/clients/{{ c.id }}/delete" hx-confirm="Archive this client?" class="inline">
+                    <button class="contrast" style="background:#c00;color:#fff;padding:.2em .6em;font-size:.85em;">Archive</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="muted">No clients found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p class="muted" style="margin-top:1rem;">
+    <a href="/ui/clients/new">+ Add client</a>
+</p>
+{% endblock %}

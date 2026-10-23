@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  cms:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://cms:cms@db:5432/cms
+    depends_on:
+      - db
+    volumes:
+      - ./uploads:/app/uploads
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: cms
+      POSTGRES_USER: cms
+      POSTGRES_PASSWORD: cms
+    ports:
+      - "5432:5432"
+    volumes:
+      - cms_db_data:/var/lib/postgresql/data
+
+volumes:
+  cms_db_data:
