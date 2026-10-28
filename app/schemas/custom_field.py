@@ -8,8 +8,8 @@ from uuid import UUID
 
 class CustomFieldBase(BaseModel):
     name: str = Field(..., max_length=150)
-    field_type: str = Field(..., max_length=30)  # text | number | date | boolean | select
-    options: Optional[Any] = None  # JSON for select options
+    field_type: str = Field(..., max_length=30)
+    options: Optional[Any] = None
     required: bool = False
     is_active: bool = True
     organization_id: Optional[UUID] = None

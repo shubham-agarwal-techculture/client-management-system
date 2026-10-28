@@ -1,7 +1,4 @@
-"""Document model — files attached to clients (or standalone).
-
-The actual bytes live in a pluggable `StorageBackend`; this table stores metadata.
-"""
+"""Document model — files attached to clients (or standalone)."""
 
 from datetime import datetime
 from typing import Optional
@@ -41,5 +38,5 @@ class Document(Base, UUIDMixin, TimestampMixin):
         back_populates="uploaded_documents", foreign_keys=[uploaded_by_id]
     )
 
-    def __repr__(self) -> str:  # pragma: no cover
+    def __repr__(self) -> str:
         return f"<Document {self.filename}>"

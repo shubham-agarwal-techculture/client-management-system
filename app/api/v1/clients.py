@@ -3,6 +3,8 @@
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
+import json
+
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 
@@ -82,12 +84,9 @@ async def create_client(
     session: SessionDep,
     current_user: RequireAgent,
     data: ClientCreate,
-    custom_values: List[CustomValue] = [],
-    tag_names: List[str] = [],
 ):
     svc = ClientService(session, current_user)
-    client = await svc.create(data, custom_values=custom_values, tag_names=tag_names)
-    # reload with relations for the response
+    client = await svc.create(data)
     client = await svc.get(client.id, load_relations=True)
     return _client_to_read(client)
 
@@ -109,12 +108,26 @@ async def update_client(
     session: SessionDep,
     current_user: RequireAgent,
     data: ClientUpdate,
-    custom_values: Optional[List[CustomValue]] = None,
-    tag_names: Optional[List[str]] = None,
+    custom_values: Optional[str] = Query(
+        None, description="JSON string: list of {field_id, value}"
+    ),
+    tag_names: Optional[str] = Query(
+        None, description="Comma-separated tag names"
+    ),
 ):
+    parsed_cv: Optional[List[CustomValue]] = None
+    if custom_values is not None:
+        try:
+            parsed_cv = [CustomValue(**item) for item in json.loads(custom_values)]
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=f"Invalid custom_values JSON: {exc}")
+    parsed_tags: Optional[List[str]] = None
+    if tag_names is not None:
+        parsed_tags = [t.strip() for t in tag_names.split(",") if t.strip()]
+
     svc = ClientService(session, current_user)
     client = await svc.update(
-        client_id, data, custom_values=custom_values, tag_names=tag_names
+        client_id, data, custom_values=parsed_cv, tag_names=parsed_tags
     )
     client = await svc.get(client.id, load_relations=True)
     return _client_to_read(client)

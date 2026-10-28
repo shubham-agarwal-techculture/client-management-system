@@ -1,8 +1,4 @@
-"""Interaction model — a domain-agnostic communication log.
-
-Supported types are open-ended (call, email, meeting, note, visit, other) so any
-domain can record the interactions that matter to it.
-"""
+"""Interaction model — a domain-agnostic communication log."""
 
 from datetime import datetime
 from typing import List, Optional
@@ -35,10 +31,10 @@ class Interaction(Base, UUIDMixin, TimestampMixin):
 
     interaction_type: Mapped[str] = mapped_column(
         String(50), nullable=False, index=True
-    )  # call | email | meeting | note | visit | other
+    )
     direction: Mapped[Optional[str]] = mapped_column(
         String(20), nullable=True
-    )  # inbound | outbound
+    )
     subject: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
     body: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     occurred_at: Mapped[Optional[datetime]] = mapped_column(
@@ -50,5 +46,5 @@ class Interaction(Base, UUIDMixin, TimestampMixin):
         back_populates="interactions", foreign_keys=[user_id]
     )
 
-    def __repr__(self) -> str:  # pragma: no cover
+    def __repr__(self) -> str:
         return f"<Interaction {self.interaction_type} for client {self.client_id}>"

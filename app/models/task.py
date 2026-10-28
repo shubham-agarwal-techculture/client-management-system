@@ -33,10 +33,10 @@ class Task(Base, UUIDMixin, TimestampMixin):
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     status: Mapped[str] = mapped_column(
         String(30), nullable=False, default="todo", index=True
-    )  # todo | in_progress | done | cancelled
+    )
     priority: Mapped[str] = mapped_column(
         String(20), nullable=False, default="medium", index=True
-    )  # low | medium | high | urgent
+    )
     due_date: Mapped[Optional[datetime]] = mapped_column(
         DateTime(timezone=True), nullable=True, index=True
     )
@@ -49,5 +49,5 @@ class Task(Base, UUIDMixin, TimestampMixin):
         back_populates="assigned_tasks", foreign_keys=[assignee_id]
     )
 
-    def __repr__(self) -> str:  # pragma: no cover
+    def __repr__(self) -> str:
         return f"<Task {self.title}>"

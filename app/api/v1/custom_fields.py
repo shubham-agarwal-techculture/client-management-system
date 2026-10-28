@@ -47,7 +47,7 @@ async def list_custom_fields(
     current_user: CurrentUserDep,
     organization_id: Optional[UUID] = None,
 ):
-    stmt = select(CustomField).where(CustomField.is_active == True)  # noqa: E712
+    stmt = select(CustomField).where(CustomField.is_active == True)
     if organization_id:
         stmt = stmt.where(CustomField.organization_id == organization_id)
     result = await session.execute(stmt.order_by(CustomField.name))

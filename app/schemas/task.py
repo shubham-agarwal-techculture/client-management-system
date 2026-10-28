@@ -11,8 +11,8 @@ class TaskBase(BaseModel):
     client_id: Optional[UUID] = None
     title: str = Field(..., max_length=200)
     description: Optional[str] = None
-    status: str = Field(default="todo", max_length=30)  # todo | in_progress | done | cancelled
-    priority: str = Field(default="medium", max_length=20)  # low | medium | high | urgent
+    status: str = Field(default="todo", max_length=30)
+    priority: str = Field(default="medium", max_length=20)
     due_date: Optional[datetime] = None
     assignee_id: Optional[UUID] = None
 

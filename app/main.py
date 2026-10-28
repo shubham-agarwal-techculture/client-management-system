@@ -7,18 +7,17 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-# Import all models so SQLAlchemy registers every table on Base.metadata.
-import app.models.client  # noqa: F401
-import app.models.custom_field  # noqa: F401
-import app.models.client_custom_value  # noqa: F401
-import app.models.tag  # noqa: F401
-import app.models.client_tag  # noqa: F401
-import app.models.organization  # noqa: F401
-import app.models.user  # noqa: F401
-import app.models.interaction  # noqa: F401
-import app.models.task  # noqa: F401
-import app.models.document  # noqa: F401
-import app.models.event_log  # noqa: F401
+import app.models.client
+import app.models.custom_field
+import app.models.client_custom_value
+import app.models.tag
+import app.models.client_tag
+import app.models.organization
+import app.models.user
+import app.models.interaction
+import app.models.task
+import app.models.document
+import app.models.event_log
 
 from app.config import settings
 from app.database import init_db, dispose_db
@@ -92,7 +91,6 @@ async def root() -> dict[str, str]:
     }
 
 
-# --- API v1 routers ---
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(users.router, prefix="/api/v1")
 app.include_router(organizations.router, prefix="/api/v1")

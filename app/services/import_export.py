@@ -112,7 +112,6 @@ async def import_clients_json(
         )
         session.add(client)
         await session.flush()
-        # custom values
         for field_id_str, value in (item.get("custom_values") or {}).items():
             field_result = await session.execute(
                 select(CustomField).where(CustomField.id == field_id_str)
@@ -126,7 +125,6 @@ async def import_clients_json(
                         value=str(value),
                     )
                 )
-        # tags
         for tag_name in item.get("tags") or []:
             tag_result = await session.execute(
                 select(Tag).where(Tag.name == tag_name)

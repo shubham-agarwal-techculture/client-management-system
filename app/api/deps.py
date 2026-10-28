@@ -7,7 +7,6 @@ from fastapi import Depends
 from app.dependencies import CurrentUser, DBSession
 
 
-# Re-export for convenience in routers
 CurrentUserDep = CurrentUser
 SessionDep = DBSession
 

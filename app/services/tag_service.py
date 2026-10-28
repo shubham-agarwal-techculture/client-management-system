@@ -73,7 +73,7 @@ class TagService:
         await self.session.commit()
 
     async def clients_for_tag(self, tag_id: UUID) -> List[Client]:
-        await self.get(tag_id)  # ensure exists
+        await self.get(tag_id)
         result = await self.session.execute(
             select(ClientTag.client_id).where(ClientTag.tag_id == tag_id)
         )

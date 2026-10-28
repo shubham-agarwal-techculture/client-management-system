@@ -27,7 +27,6 @@ def create_access_token(
     expires_delta: Optional[timedelta] = None,
     extra_claims: Optional[Dict[str, Any]] = None,
 ) -> str:
-    """Issue a JWT access token."""
     expire = datetime.now(timezone.utc) + (
         expires_delta or timedelta(minutes=settings.access_token_expire_minutes)
     )
@@ -44,11 +43,8 @@ def create_refresh_token(subject: str) -> str:
 
 
 def decode_token(token: str) -> Optional[Dict[str, Any]]:
-    """Decode and validate a JWT. Returns the payload or None if invalid."""
     try:
-        payload = jwt.decode(
-            token, settings.secret_key, algorithms=[settings.algorithm]
-        )
+        payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
         return payload
     except JWTError:
         return None

@@ -1,7 +1,7 @@
 """Pagination helpers for list endpoints."""
 
 from dataclasses import dataclass
-from typing import Generic, List, Optional, TypeVar
+from typing import Generic, List, TypeVar
 
 from pydantic import BaseModel
 

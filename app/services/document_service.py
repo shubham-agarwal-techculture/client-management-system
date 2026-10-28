@@ -88,12 +88,10 @@ class DocumentService:
         try:
             await storage.delete(doc.storage_path)
         except StorageError:
-            # continue so DB record can still be removed
             pass
         await self.session.delete(doc)
         await self.session.commit()
 
     async def download_path(self, document_id: UUID) -> tuple[str, str]:
-        """Return (storage_path, filename) for serving the file."""
         doc = await self.get(document_id)
         return doc.storage_path, doc.filename

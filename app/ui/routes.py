@@ -1,8 +1,4 @@
-"""HTMX server-rendered admin UI.
-
-Authentication is cookie-based (`access_token` cookie set after UI login).
-The UI talks to the service layer directly (no self-HTTP calls).
-"""
+"""HTMX server-rendered admin UI."""
 
 from typing import Optional
 
@@ -12,18 +8,16 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_session
+from app.api.deps import SessionDep
 from app.config import settings
-from app.database import async_session_factory
+from app.database import async_session_factory, get_session
 from app.models.user import User
-from app.security import decode_token, get_password_hash
+from app.security import decode_token, get_password_hash, verify_password
 from app.services.client_service import ClientService
 
 router = APIRouter(tags=["ui"])
 templates = Jinja2Templates(directory="app/ui/templates")
 
-
-# --------------------------------------------------------------------------- auth helpers
 
 async def _get_user(session: AsyncSession, token: str) -> Optional[User]:
     payload = decode_token(token)
@@ -40,7 +34,7 @@ async def ui_user(
     request: Request,
     session: AsyncSession = Depends(get_session),
     access_token: Optional[str] = Cookie(None),
-) -> User:
+) -> User | RedirectResponse:
     if not access_token:
         return RedirectResponse(url="/ui/login", status_code=status.HTTP_303_SEE_OTHER)
     user = await _get_user(session, access_token)
@@ -50,8 +44,6 @@ async def ui_user(
         return response
     return user
 
-
-# --------------------------------------------------------------------------- auth pages
 
 @router.get("/ui/login", response_class=HTMLResponse)
 async def login_page(request: Request):
@@ -69,14 +61,13 @@ async def login(
     async with async_session_factory() as session:
         result = await session.execute(select(User).where(User.email == email))
         user = result.scalar_one_or_none()
-    from app.security import verify_password, create_access_token, create_refresh_token
-
     if not user or not verify_password(password, user.hashed_password):
         return templates.TemplateResponse(
             "login.html",
             {"request": request, "error": "Invalid email or password"},
             status_code=400,
         )
+    from app.security import create_access_token, create_refresh_token
 
     token = create_access_token(user.id)
     response = RedirectResponse(url="/ui/", status_code=status.HTTP_303_SEE_OTHER)
@@ -97,8 +88,6 @@ async def logout():
     response.delete_cookie("access_token")
     return response
 
-
-# --------------------------------------------------------------------------- clients
 
 @router.get("/ui/", response_class=HTMLResponse)
 async def clients_list(

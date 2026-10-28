@@ -5,7 +5,6 @@ from typing import Optional
 import uuid
 
 from sqlalchemy import DateTime, ForeignKey, String, Text, func
-from sqlalchemy.dialects.sqlite import JSON as SQLiteJSON
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, TimestampMixin, UUIDMixin
@@ -30,7 +29,7 @@ class EventLog(Base, UUIDMixin, TimestampMixin):
     entity_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, index=True)
     event_metadata: Mapped[Optional[str]] = mapped_column(
         Text, nullable=True, name="metadata"
-    )  # JSON text
+    )
     occurred_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -38,5 +37,5 @@ class EventLog(Base, UUIDMixin, TimestampMixin):
         index=True,
     )
 
-    def __repr__(self) -> str:  # pragma: no cover
+    def __repr__(self) -> str:
         return f"<EventLog {self.action} on {self.entity_type}>"

@@ -48,7 +48,6 @@ class ClientService:
         self.session = session
         self.actor = actor
 
-    # ------------------------------------------------------------------ create
     async def create(
         self,
         data: ClientCreate,
@@ -56,6 +55,14 @@ class ClientService:
         tag_names: List[str] = [],
     ) -> Client:
         org_id = data.organization_id
+        if (
+            settings.multi_tenant
+            and self.actor
+            and self.actor.organization_id
+            and org_id is None
+            and self.actor.role != "admin"
+        ):
+            org_id = self.actor.organization_id
         _require_org_access(self.actor, org_id)
 
         await event_bus.emit(
@@ -99,7 +106,6 @@ class ClientService:
         await self.session.refresh(client)
         return client
 
-    # ------------------------------------------------------------------ read
     async def get(self, client_id: UUID, load_relations: bool = True) -> Client:
         stmt = select(Client).where(Client.id == client_id)
         if load_relations:
@@ -116,7 +122,6 @@ class ClientService:
         _require_org_access(self.actor, client.organization_id)
         return client
 
-    # ------------------------------------------------------------------ list
     async def list(
         self,
         params: PaginationParams,
@@ -127,8 +132,6 @@ class ClientService:
         tag: Optional[str] = None,
         archived: bool = False,
     ) -> Page[Client]:
-        _require_org_access(self.actor, None)
-
         stmt = select(Client).where(Client.is_archived == archived)
         if settings.multi_tenant and self.actor and self.actor.organization_id:
             if self.actor.role != "admin":
@@ -159,7 +162,12 @@ class ClientService:
         total = (await self.session.execute(count_stmt)).scalar_one()
 
         stmt = (
-            stmt.options(selectinload(Client.tags))
+            stmt.options(
+                selectinload(Client.tags),
+                selectinload(Client.custom_values).selectinload(
+                    ClientCustomValue.field
+                ),
+            )
             .order_by(Client.created_at.desc())
             .offset(params.offset)
             .limit(params.limit)
@@ -174,7 +182,6 @@ class ClientService:
             page_size=params.page_size,
         )
 
-    # ------------------------------------------------------------------ update
     async def update(
         self,
         client_id: UUID,
@@ -220,7 +227,6 @@ class ClientService:
         await self.session.refresh(client)
         return client
 
-    # ------------------------------------------------------------------ delete
     async def delete(self, client_id: UUID, hard: bool = False) -> None:
         client = await self.get(client_id, load_relations=False)
         _require_org_access(self.actor, client.organization_id)
@@ -252,7 +258,6 @@ class ClientService:
         )
         await self.session.commit()
 
-    # ------------------------------------------------------------------ internals
     async def _set_custom_values(
         self, client: Client, values: List[CustomValue]
     ) -> None:

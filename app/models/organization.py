@@ -17,7 +17,6 @@ class Organization(Base, UUIDMixin, TimestampMixin):
     slug: Mapped[str] = mapped_column(String(100), nullable=False, unique=True, index=True)
     is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
 
-    # Relationships (typing-only, populated by SQLAlchemy)
     users: Mapped[list["User"]] = relationship(
         back_populates="organization", cascade="all, delete-orphan"
     )
@@ -25,5 +24,5 @@ class Organization(Base, UUIDMixin, TimestampMixin):
         back_populates="organization", cascade="all, delete-orphan"
     )
 
-    def __repr__(self) -> str:  # pragma: no cover
+    def __repr__(self) -> str:
         return f"<Organization {self.slug}>"

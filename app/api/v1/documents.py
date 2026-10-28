@@ -9,7 +9,6 @@ from fastapi.responses import FileResponse
 from sqlalchemy import func, select
 
 from app.api.deps import SessionDep, CurrentUserDep, RequireAgent
-from app.core.pagination import PaginationParams
 from app.models.document import Document
 from app.models.client import Client
 from app.schemas.document import DocumentRead
@@ -84,7 +83,6 @@ async def download_document(
 ):
     svc = DocumentService(session, current_user)
     storage_path, filename = await svc.download_path(document_id)
-    # Default local backend serves files from ./uploads/<storage_path>
     full = os.path.normpath(os.path.join("./uploads", storage_path))
     if not os.path.exists(full):
         raise HTTPException(status_code=404, detail="File not found")

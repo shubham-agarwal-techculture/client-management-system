@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "A domain-agnostic, extensible client management system."
 requires-python = ">=3.11"
 authors = [{ name = "Cline" }]
-license = { text = "MIT" }
+license = "MIT"
 dependencies = [
     "fastapi>=0.104.0",
     "uvicorn[standard]>=0.24.0",
@@ -22,6 +22,7 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "email-validator>=2.1.0",
     "jinja2>=3.1.0",
+    "aiosqlite"
 ]
 
 [project.optional-dependencies]
@@ -38,7 +39,7 @@ dev = [
 
 [tool.setuptools]
 packages = ["app", "app.models", "app.schemas", "app.api", "app.api.v1",
-            "app.services", "app.core", "app.ui", "app.tests"]
+            "app.services", "app.core", "app.ui"]
 
 [tool.black]
 line-length = 88

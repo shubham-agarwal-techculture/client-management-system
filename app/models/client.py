@@ -3,12 +3,7 @@
 from typing import List, Optional
 import uuid
 
-from sqlalchemy import (
-    Boolean,
-    ForeignKey,
-    String,
-    Text,
-)
+from sqlalchemy import Boolean, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, SoftDeleteMixin, TimestampMixin, UUIDMixin
@@ -31,19 +26,18 @@ class Client(Base, UUIDMixin, SoftDeleteMixin, TimestampMixin):
     name: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
     client_type: Mapped[Optional[str]] = mapped_column(
         String(100), nullable=True, index=True
-    )  # e.g. prospect, customer, vendor, partner, donor
+    )
     status: Mapped[str] = mapped_column(
         String(50), nullable=False, default="active", index=True
-    )  # e.g. active, inactive, lead, churned
+    )
     email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     phone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     website: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
-    address: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # stored as JSON text
+    address: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     is_archived: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
-    # Relationships
     organization: Mapped[Optional["Organization"]] = relationship(
         back_populates="clients"
     )
@@ -67,11 +61,10 @@ class Client(Base, UUIDMixin, SoftDeleteMixin, TimestampMixin):
         back_populates="client", cascade="all, delete-orphan"
     )
 
-    def __repr__(self) -> str:  # pragma: no cover
+    def __repr__(self) -> str:
         return f"<Client {self.name}>"
 
 
-# Bottom imports resolve string forward references in relationships.
 from app.models.organization import Organization  # noqa: E402
 from app.models.user import User  # noqa: E402
 from app.models.tag import Tag  # noqa: E402

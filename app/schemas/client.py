@@ -14,7 +14,7 @@ class ClientBase(BaseModel):
     email: Optional[str] = Field(default=None, max_length=255)
     phone: Optional[str] = Field(default=None, max_length=50)
     website: Optional[str] = Field(default=None, max_length=200)
-    address: Optional[str] = None  # JSON text
+    address: Optional[str] = None
     notes: Optional[str] = None
     owner_id: Optional[UUID] = None
     organization_id: Optional[UUID] = None
@@ -50,6 +50,5 @@ class ClientRead(ClientBase):
     is_archived: bool
     created_at: datetime
     updated_at: Optional[datetime] = None
-    # Populated by the service layer when requested
     custom_values: Dict[str, Any] = {}
     tag_names: List[str] = []

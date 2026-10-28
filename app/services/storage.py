@@ -1,13 +1,8 @@
-"""Pluggable document storage backends.
-
-Implement `StorageBackend` to add a new storage target (e.g. S3, Azure Blob, GCS)
-and bind it in `app/config.py` / `get_storage_backend()`.
-"""
+"""Pluggable document storage backends."""
 
 from __future__ import annotations
 
 import os
-import shutil
 import uuid
 from abc import ABC, abstractmethod
 from typing import Optional
@@ -16,28 +11,24 @@ from app.core.exceptions import StorageError
 
 
 class StorageBackend(ABC):
-    """Abstract storage interface."""
-
     @abstractmethod
     async def save(
         self, file_data: bytes, filename: str, content_type: Optional[str] = None
     ) -> str:
-        """Store bytes and return a logical storage path."""
+        pass
 
     @abstractmethod
     async def get_url(
         self, storage_path: str, expires_in: int = 3600
     ) -> str:
-        """Return a URL (public or signed) for the stored object."""
+        pass
 
     @abstractmethod
     async def delete(self, storage_path: str) -> None:
-        """Delete the stored object."""
+        pass
 
 
 class LocalStorageBackend(StorageBackend):
-    """Filesystem storage — default, zero dependencies."""
-
     def __init__(self, base_path: str):
         self.base_path = base_path
         os.makedirs(self.base_path, exist_ok=True)
@@ -75,14 +66,11 @@ class LocalStorageBackend(StorageBackend):
             raise StorageError(f"Failed to delete file: {exc}") from exc
 
 
-try:  # pragma: no cover - optional dependency
+try:
     from botocore.exceptions import ClientError as BotoClientError
-
     import boto3
 
     class S3StorageBackend(StorageBackend):
-        """S3-compatible storage (AWS S3, MinIO, etc.). Requires `boto3`."""
-
         def __init__(
             self,
             bucket: str,
@@ -131,27 +119,26 @@ try:  # pragma: no cover - optional dependency
             except BotoClientError as exc:
                 raise StorageError(f"S3 delete failed: {exc}") from exc
 
-except ImportError:  # pragma: no cover
+except ImportError:
 
-    class S3StorageBackend(StorageBackend):  # type: ignore[no-redef]
+    class S3StorageBackend(StorageBackend):
         def __init__(self, *args, **kwargs):
             raise StorageError(
                 "S3 backend requested but `boto3` is not installed. "
                 "Use STORAGE_BACKEND=local or install boto3."
             )
 
-        async def save(self, *args, **kwargs):  # pragma: no cover
+        async def save(self, *args, **kwargs):
             raise StorageError("S3 backend unavailable")
 
-        async def get_url(self, *args, **kwargs):  # pragma: no cover
+        async def get_url(self, *args, **kwargs):
             raise StorageError("S3 backend unavailable")
 
-        async def delete(self, *args, **kwargs):  # pragma: no cover
+        async def delete(self, *args, **kwargs):
             raise StorageError("S3 backend unavailable")
 
 
 def get_storage_backend() -> StorageBackend:
-    """Factory driven by settings."""
     from app.config import settings
 
     backend = settings.storage_backend.lower()

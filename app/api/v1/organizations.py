@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 
 from app.api.deps import SessionDep, CurrentUserDep
-from app.dependencies import require_roles
+from app.dependencies import require_admin
 from app.models.organization import Organization
 from app.models.user import User
 from app.schemas.organization import OrganizationRead, OrganizationCreate, OrganizationUpdate
@@ -17,7 +17,7 @@ router = APIRouter(prefix="/organizations", tags=["organizations"])
 
 @router.get("", response_model=List[OrganizationRead])
 async def list_orgs(
-    session: SessionDep, _: User = Depends(require_roles("admin"))
+    session: SessionDep, _: User = Depends(require_admin)
 ):
     result = await session.execute(select(Organization).order_by(Organization.name))
     return list(result.scalars().all())
@@ -29,7 +29,7 @@ async def list_orgs(
 async def create_org(
     session: SessionDep,
     data: OrganizationCreate,
-    _: User = Depends(require_roles("admin")),
+    _: User = Depends(require_admin),
 ):
     result = await session.execute(
         select(Organization).where(Organization.slug == data.slug)
@@ -50,7 +50,7 @@ async def get_org(
     org_id: UUID,
     session: SessionDep,
     current_user: CurrentUserDep,
-    _: User = Depends(require_roles("admin")),
+    _: User = Depends(require_admin),
 ):
     result = await session.execute(select(Organization).where(Organization.id == org_id))
     org = result.scalar_one_or_none()
@@ -64,7 +64,7 @@ async def update_org(
     org_id: UUID,
     data: OrganizationUpdate,
     session: SessionDep,
-    _: User = Depends(require_roles("admin")),
+    _: User = Depends(require_admin),
 ):
     result = await session.execute(select(Organization).where(Organization.id == org_id))
     org = result.scalar_one_or_none()

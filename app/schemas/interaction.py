@@ -9,7 +9,7 @@ from uuid import UUID
 
 class InteractionBase(BaseModel):
     client_id: UUID
-    interaction_type: str = Field(..., max_length=50)  # call | email | meeting | note ...
+    interaction_type: str = Field(..., max_length=50)
     direction: Optional[str] = Field(default=None, max_length=20)
     subject: Optional[str] = Field(default=None, max_length=200)
     body: Optional[str] = None

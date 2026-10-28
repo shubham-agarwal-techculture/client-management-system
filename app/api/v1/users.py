@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 
 from app.api.deps import SessionDep, CurrentUserDep
-from app.dependencies import require_roles
+from app.dependencies import require_admin
 from app.models.user import User
 from app.schemas.user import UserRead, UserCreate, UserUpdate
 from app.security import get_password_hash
@@ -16,7 +16,7 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.get("", response_model=List[UserRead])
-async def list_users(session: SessionDep, _: User = Depends(require_roles("admin"))):
+async def list_users(session: SessionDep, _: User = Depends(require_admin)):
     result = await session.execute(select(User).order_by(User.created_at.desc()))
     return list(result.scalars().all())
 
@@ -25,7 +25,7 @@ async def list_users(session: SessionDep, _: User = Depends(require_roles("admin
 async def create_user(
     session: SessionDep,
     data: UserCreate,
-    _: User = Depends(require_roles("admin")),
+    _: User = Depends(require_admin),
 ):
     result = await session.execute(select(User).where(User.email == data.email))
     if result.scalar_one_or_none():
@@ -67,7 +67,7 @@ async def update_user(
     data: UserUpdate,
     session: SessionDep,
     current_user: CurrentUserDep,
-    _: User = Depends(require_roles("admin")),
+    _: User = Depends(require_admin),
 ):
     result = await session.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()

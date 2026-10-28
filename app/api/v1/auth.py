@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.api.deps import SessionDep
 from app.config import settings
-from app.dependencies import get_current_user, require_roles
+from app.dependencies import get_current_user, require_admin
 from app.models.user import User
 from app.security import (
     create_access_token,
@@ -77,7 +77,7 @@ async def me(current_user: User = Depends(get_current_user)):
 async def create_user(
     session: SessionDep,
     data: UserCreate,
-    _admin: User = Depends(require_roles("admin")),
+    _admin: User = Depends(require_admin),
 ):
     from sqlalchemy import select
 

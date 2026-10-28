@@ -28,7 +28,6 @@ class InteractionService:
         params: PaginationParams,
         interaction_type: Optional[str] = None,
     ) -> Page[Interaction]:
-        # ensure client exists & access
         from app.services.client_service import ClientService
 
         client_svc = ClientService(self.session, self.actor)
@@ -65,7 +64,6 @@ class InteractionService:
         return interaction
 
     async def create(self, data: InteractionCreate) -> Interaction:
-        # verify client exists
         result = await self.session.execute(
             select(Client).where(Client.id == data.client_id)
         )
@@ -73,7 +71,7 @@ class InteractionService:
             raise NotFoundError("Client", data.client_id)
 
         interaction = Interaction(
-            organization_id=None,  # set from client org if multi-tenant
+            organization_id=None,
             client_id=data.client_id,
             user_id=self.actor.id if self.actor else None,
             interaction_type=data.interaction_type,

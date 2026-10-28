@@ -1,8 +1,9 @@
 """FastAPI dependencies: DB session, current user, pagination, permissions."""
 
-from typing import Annotated, List, Optional
+from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
@@ -12,32 +13,17 @@ from app.security import decode_token
 from app.core.pagination import PaginationParams
 
 
-# --- Database ---
-
 DBSession = Annotated[AsyncSession, Depends(get_session)]
 
-
-# --- Authentication ---
-
-oauth2_scheme = None  # set lazily to avoid importing fastapi.security at module load
-
-
-def _get_oauth2_scheme():
-    global oauth2_scheme
-    if oauth2_scheme is None:
-        from fastapi.security import OAuth2PasswordBearer
-
-        oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
-    return oauth2_scheme
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
 async def get_current_user(
     session: DBSession,
-    token: str = Depends(_get_oauth2_scheme),
+    token: str = Depends(oauth2_scheme),
 ) -> User:
-    """Return the authenticated User for the request, or raise 401."""
-    from app.models.user import User
     from sqlalchemy import select
+    from uuid import UUID as _UUID
 
     payload = decode_token(token)
     if payload is None or payload.get("typ") == "refresh":
@@ -54,6 +40,14 @@ async def get_current_user(
             detail="Invalid token payload",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    try:
+        user_id = _UUID(user_id)
+    except (ValueError, AttributeError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token subject",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     result = await session.execute(select(User).where(User.id == user_id))
     user = result.scalar_one_or_none()
@@ -63,34 +57,43 @@ async def get_current_user(
             detail="User not found or inactive",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    return User
+    return user
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
-# --- Authorization ---
-
-def require_roles(*allowed_roles: str):
-    """Dependency factory: current user must have one of the allowed roles."""
-
-    def checker(current_user: CurrentUser) -> User:
-        if current_user.role not in allowed_roles:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Insufficient permissions",
-            )
-        return current_user
-
-    return checker
+async def require_admin(current_user: User = Depends(get_current_user)) -> User:
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Insufficient permissions",
+        )
+    return current_user
 
 
-RequireAdmin = Annotated[User, Depends(require_roles("admin"))]
-RequireManager = Annotated[User, Depends(require_roles("admin", "manager"))]
-RequireAgent = Annotated[User, Depends(require_roles("admin", "manager", "agent"))]
+async def require_manager(current_user: User = Depends(get_current_user)) -> User:
+    if current_user.role not in ("admin", "manager"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Insufficient permissions",
+        )
+    return current_user
 
 
-# --- Pagination ---
+async def require_agent(current_user: User = Depends(get_current_user)) -> User:
+    if current_user.role not in ("admin", "manager", "agent"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Insufficient permissions",
+        )
+    return current_user
+
+
+RequireAdmin = Annotated[User, Depends(require_admin)]
+RequireManager = Annotated[User, Depends(require_manager)]
+RequireAgent = Annotated[User, Depends(require_agent)]
+
 
 def pagination_params(page: int = 1, page_size: int = 20) -> PaginationParams:
     if page < 1:

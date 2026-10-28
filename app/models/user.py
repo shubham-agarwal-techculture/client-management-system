@@ -17,7 +17,7 @@ class User(Base, UUIDMixin, SoftDeleteMixin, TimestampMixin):
     full_name: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
     role: Mapped[str] = mapped_column(
         String(50), nullable=False, default="agent", index=True
-    )  # admin | manager | agent | viewer
+    )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     organization_id: Mapped[Optional[uuid.UUID]] = mapped_column(
@@ -26,9 +26,7 @@ class User(Base, UUIDMixin, SoftDeleteMixin, TimestampMixin):
         index=True,
     )
 
-    organization: Mapped[Optional["Organization"]] = relationship(
-        back_populates="users"
-    )
+    organization: Mapped[Optional["Organization"]] = relationship(back_populates="users")
     owned_clients: Mapped[list["Client"]] = relationship(
         back_populates="owner", foreign_keys="[Client.owner_id]"
     )
@@ -42,7 +40,7 @@ class User(Base, UUIDMixin, SoftDeleteMixin, TimestampMixin):
         back_populates="uploaded_by", foreign_keys="[Document.uploaded_by_id]"
     )
 
-    def __repr__(self) -> str:  # pragma: no cover
+    def __repr__(self) -> str:
         return f"<User {self.email}>"
 
     @property
@@ -54,7 +52,6 @@ class User(Base, UUIDMixin, SoftDeleteMixin, TimestampMixin):
         return self.role in ("admin", "manager")
 
 
-# Bottom imports resolve string forward references in relationships.
 from app.models.organization import Organization  # noqa: E402
 from app.models.task import Task  # noqa: E402
 from app.models.interaction import Interaction  # noqa: E402

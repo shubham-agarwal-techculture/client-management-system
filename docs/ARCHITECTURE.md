@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Client Management System is a layered, domain-agnostic application:
+The Client Management System (CMS) is a layered, domain-agnostic application:
 
 ```
 HTTP layer (FastAPI routers)

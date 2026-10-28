@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+build/
+develop-eggs/
+dist/
+docs/_build/
+.pytest_cache/
+
+# Virtualenv
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Database files / uploads / artifacts
+*.db
+*.sqlite3
+*.sqlite
+uploads/
+*.log
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.*.swp
+*~
+*.orig
+*.rej
+
+# Alembic autogenerate leftovers
+alembic/versions/tmp*.py

@@ -24,9 +24,8 @@ class ClientCustomValue(Base, UUIDMixin):
     )
     value: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
-    # Unique (client, field) pair is enforced via a DB constraint in migrations.
     client: Mapped["Client"] = relationship(back_populates="custom_values")
     field: Mapped["CustomField"] = relationship(back_populates="values")
 
-    def __repr__(self) -> str:  # pragma: no cover
+    def __repr__(self) -> str:
         return f"<ClientCustomValue client={self.client_id} field={self.field_id}>"

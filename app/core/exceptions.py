@@ -4,8 +4,6 @@ from typing import Any, Dict, Optional
 
 
 class CMSError(Exception):
-    """Base exception for all client-management-system errors."""
-
     def __init__(
         self,
         message: str,
@@ -19,8 +17,6 @@ class CMSError(Exception):
 
 
 class NotFoundError(CMSError):
-    """Raised when a requested resource does not exist."""
-
     def __init__(self, resource: str, identifier: Any) -> None:
         super().__init__(
             f"{resource} with identifier {identifier!r} not found",
@@ -30,8 +26,6 @@ class NotFoundError(CMSError):
 
 
 class AlreadyExistsError(CMSError):
-    """Raised when a unique constraint would be violated."""
-
     def __init__(self, resource: str, field: str, value: Any) -> None:
         super().__init__(
             f"{resource} with {field}={value!r} already exists",
@@ -41,8 +35,6 @@ class AlreadyExistsError(CMSError):
 
 
 class ValidationError(CMSError):
-    """Raised when business-rule validation fails."""
-
     def __init__(
         self,
         message: str,
@@ -57,14 +49,10 @@ class ValidationError(CMSError):
 
 
 class AuthorizationError(CMSError):
-    """Raised when the current actor lacks permission for an operation."""
-
     def __init__(self, message: str = "Insufficient permissions") -> None:
         super().__init__(message, code="forbidden")
 
 
 class StorageError(CMSError):
-    """Raised by document storage backends on failure."""
-
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None) -> None:
         super().__init__(message, code="storage_error", details=details or {})

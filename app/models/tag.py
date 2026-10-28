@@ -19,7 +19,7 @@ class Tag(Base, UUIDMixin, TimestampMixin):
     )
 
     name: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
-    color: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)  # hex
+    color: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     clients: Mapped[List["Client"]] = relationship(
@@ -27,9 +27,8 @@ class Tag(Base, UUIDMixin, TimestampMixin):
         back_populates="tags",
     )
 
-    def __repr__(self) -> str:  # pragma: no cover
+    def __repr__(self) -> str:
         return f"<Tag {self.name}>"
 
 
-# Bottom imports resolve string forward references in relationships.
 from app.models.client import Client  # noqa: E402
